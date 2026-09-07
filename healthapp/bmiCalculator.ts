@@ -1,7 +1,4 @@
-interface Bmivalues {
-	height: number;
-	weight: number;
-}
+import { parseBmiArguments } from "./utils";
 
 const calculateBmi = (height: number, weight: number): string => {
 	const heightInMeters = height / 100;
@@ -26,4 +23,14 @@ const calculateBmi = (height: number, weight: number): string => {
 	}
 };
 
-console.log(calculateBmi(180, 74));
+try {
+	const { height, weight } = parseBmiArguments(process.argv);
+	console.log(calculateBmi(height, weight));
+} catch (error: unknown) {
+	let errorMessage = "Something bad happened.";
+	
+	if (error instanceof Error) {
+		errorMessage += " Error: " + error.message;
+	}
+	console.log(errorMessage);
+}
