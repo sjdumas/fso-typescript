@@ -1,4 +1,4 @@
-import { parseExerciseArguments } from "./utils";
+import { parseExerciseArguments } from "./utils.js";
 
 interface ExerciseResult {
 	periodLength: number;

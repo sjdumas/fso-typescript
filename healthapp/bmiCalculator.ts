@@ -1,4 +1,4 @@
-import { parseBmiArguments } from "./utils";
+import { parseBmiArguments } from "./utils.js";
 
 const calculateBmi = (height: number, weight: number): string => {
 	const heightInMeters = height / 100;
