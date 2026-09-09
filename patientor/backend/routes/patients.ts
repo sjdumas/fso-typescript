@@ -1,5 +1,6 @@
 import express from "express";
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
+import { z } from "zod";
 import patientService from "../services/patientService";
 import { toNewPatient } from "../utils";
 
@@ -9,19 +10,22 @@ router.get("/", (_req, res) => {
 	res.send(patientService.getNonSensitiveEntries());
 });
 
-router.post("/", (req: Request, res: Response) => {
+router.post("/", (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const newPatient = toNewPatient(req.body);
 		const addedPatient = patientService.addPatient(newPatient);
 
 		res.json(addedPatient);
 	} catch (error: unknown) {
-		let errorMessage = "Something went wrong.";
+		next(error);
+	}
+});
 
-		if (error instanceof Error) {
-			errorMessage += " Error: " + error.message;
-		}
-		res.status(400).send(errorMessage);
+router.use((error: unknown, _req: Request, res: Response, next: NextFunction) => {
+	if (error instanceof z.ZodError) {
+		res.status(400).send("Something went wrong. Error: " + error.issues.map((i) => i.message).join(", "));
+	} else {
+		next(error);
 	}
 });
 
