@@ -24,3 +24,9 @@ export interface NonSensitiveDiaryEntry {
 	weather: Weather;
 	visibility: Visibility;
 }
+
+export interface DiaryEntry extends NonSensitiveDiaryEntry {
+	comment?: string;
+}
+
+export type NewDiaryEntry = Omit<DiaryEntry, "id">;

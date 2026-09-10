@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import diaryService from "./services/diaries";
+import DiaryForm from "./components/DiaryForm";
 import type { NonSensitiveDiaryEntry } from "./types";
 
 const App = () => {
@@ -9,9 +10,16 @@ const App = () => {
 		diaryService.getAllDiaries().then((data) => setDiaries(data));
 	}, []);
 
+	const addDiary = (values: NewDiaryEntry) => {
+		diaryService.createDiary(values).then((newDiary) => {
+			setDiaries(diaries.concat(newDiary));
+		});
+	};
+
 	return (
 		<div>
 			<h1>Flight diaries</h1>
+			<DiaryForm addDiary={addDiary} />
 			{diaries.map((diary) => (
 				<div key={diary.id}>
 					<h3>{diary.date}</h3>
