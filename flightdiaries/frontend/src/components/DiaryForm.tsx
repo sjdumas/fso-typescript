@@ -41,32 +41,34 @@ const DiaryForm = ({ addDiary }: DiaryFormProps) => {
 					/>
 				</div>
 				<div>
-					weather{" "}
-					<select
-						value={weather}
-						onChange={(event) => setWeather(event.target.value as Weather)}
-					>
-						{Object.values(Weather).map((w) => (
-							<option key={w} value={w}>
-								{w}
-							</option>
-						))}
-					</select>
+					visibility{" "}
+					{Object.values(Visibility).map((v) => (
+						<span key={v}>
+							{v}
+							<input
+								type="radio"
+								name="visibility"
+								value={v}
+								checked={visibility === v}
+								onChange={() => setVisibility(v)}
+							/>
+						</span>
+					))}
 				</div>
 				<div>
-					visibility{" "}
-					<select
-						value={visibility}
-						onChange={(event) =>
-							setVisibility(event.target.value as Visibility)
-						}
-					>
-						{Object.values(Visibility).map((v) => (
-							<option key={v} value={v}>
-								{v}
-							</option>
-						))}
-					</select>
+					weather{" "}
+					{Object.values(Weather).map((w) => (
+						<span key={w}>
+							{w}
+							<input
+								type="radio"
+								name="weather"
+								value={w}
+								checked={weather === w}
+								onChange={() => setWeather(w)}
+							/>
+						</span>
+					))}
 				</div>
 				<div>
 					comment{" "}
