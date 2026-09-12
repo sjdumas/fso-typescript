@@ -1,4 +1,6 @@
-const patients = [
+import type { Patient } from "../types";
+
+const patients: Omit<Patient, "entries">[] = [
 	{
 		id: "d2773336-f723-11e9-8f0b-362b9e155667",
 		name: "John McClane",
