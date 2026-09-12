@@ -5,23 +5,41 @@ import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
 import TransgenderIcon from "@mui/icons-material/Transgender";
 
-import { Patient, Gender, Entry } from "../types";
+import { Patient, Gender, Entry, Diagnosis } from "../types";
 import patientService from "../services/patients";
 
-const EntryDetails = ({ entry }: { entry: Entry }) => {
+interface EntryDetailsProps {
+	entry: Entry;
+	diagnoses: Diagnosis[];
+}
+
+const EntryDetails = ({ entry, diagnoses }: EntryDetailsProps) => {
+	const findDiagnosis = (code: string) => {
+		return diagnoses.find((d) => d.code === code);
+	};
+
 	return (
 		<div style={{ border: "1px solid black", borderRadius: "5px", padding: "0.5em", marginBottom: "0.5em" }}>
 			<Typography>{entry.date} {entry.description}</Typography>
 			<ul>
-				{entry.diagnosisCodes?.map((code) => (
-					<li key={code}>{code}</li>
-				))}
+				{entry.diagnosisCodes?.map((code) => {
+					const diagnosis = findDiagnosis(code);
+					return (
+						<li key={code}>
+							{code} {diagnosis ? diagnosis.name : ""}
+						</li>
+					);
+				})}
 			</ul>
 		</div>
 	);
 };
 
-const PatientPage = () => {
+interface PatientPageProps {
+	diagnoses: Diagnosis[];
+}
+
+const PatientPage = ({ diagnoses }: PatientPageProps) => {
 	const { id } = useParams<{ id: string }>();
 	const [patient, setPatient] = useState<Patient | null>(null);
 
@@ -63,7 +81,7 @@ const PatientPage = () => {
 			<Divider sx={{ marginY: 2 }} />
 			<Typography variant="h6">entries</Typography>
 			{patient.entries.map((entry) => (
-				<EntryDetails key={entry.id} entry={entry} />
+				<EntryDetails key={entry.id} entry={entry} diagnoses={diagnoses} />
 			))}
 		</div>
 	);
