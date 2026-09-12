@@ -2,10 +2,7 @@ import { v1 as uuid } from "uuid";
 import patientsData from "../data/patients";
 import type { NewPatient, NonsensitivePatient, Patient } from "../types";
 
-const patients: Patient[] = patientsData.map((patient) => ({
-	...patient,
-	entries: [],
-}));
+const patients: Patient[] = patientsData;
 
 const getEntries = (): Patient[] => {
 	return patients;
