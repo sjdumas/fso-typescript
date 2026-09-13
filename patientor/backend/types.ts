@@ -22,12 +22,14 @@ interface BaseEntry {
 	diagnosisCodes?: Array<Diagnosis["code"]>;
 }
 
-export enum HealthCheckRating {
-	"Healthy" = 0,
-	"LowRisk" = 1,
-	"HighRisk" = 2,
-	"CriticalRisk" = 3,
-}
+export const HealthCheckRating = {
+	Healthy: 0,
+	LowRisk: 1,
+	HighRisk: 2,
+	CriticalRisk: 3,
+} as const;
+
+export type HealthCheckRating = (typeof HealthCheckRating)[keyof typeof HealthCheckRating];
 
 interface HealthCheckEntry extends BaseEntry {
 	type: "HealthCheck";
@@ -60,6 +62,11 @@ export type Entry =
 	| OccupationalHealthcareEntry
 	| HealthCheckEntry;
 
+// Special Omit for unions, since a plain Omit collapses to only shared fields
+type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+
+export type NewEntry = UnionOmit<Entry, "id">;
+
 export interface Patient {
 	id: string;
 	name: string;
@@ -81,3 +88,49 @@ export const NewPatientSchema = z.object({
 	gender: z.enum(Gender),
 	occupation: z.string(),
 });
+
+const BaseEntrySchema = z.object({
+	description: z.string(),
+	date: z.iso.date(),
+	specialist: z.string(),
+	diagnosisCodes: z.array(z.string()).optional(),
+});
+
+const HealthCheckRatingSchema = z.union([
+	z.literal(HealthCheckRating.Healthy),
+	z.literal(HealthCheckRating.LowRisk),
+	z.literal(HealthCheckRating.HighRisk),
+	z.literal(HealthCheckRating.CriticalRisk),
+]);
+
+const HealthCheckEntrySchema = BaseEntrySchema.extend({
+	type: z.literal("HealthCheck"),
+	healthCheckRating: HealthCheckRatingSchema,
+});
+
+const DischargeSchema = z.object({
+	date: z.iso.date(),
+	criteria: z.string(),
+});
+
+const HospitalEntrySchema = BaseEntrySchema.extend({
+	type: z.literal("Hospital"),
+	discharge: DischargeSchema,
+});
+
+const SickLeaveSchema = z.object({
+	startDate: z.iso.date(),
+	endDate: z.iso.date(),
+});
+
+const OccupationalHealthcareEntrySchema = BaseEntrySchema.extend({
+	type: z.literal("OccupationalHealthcare"),
+	employerName: z.string(),
+	sickLeave: SickLeaveSchema.optional(),
+});
+
+export const NewEntrySchema = z.discriminatedUnion("type", [
+	HospitalEntrySchema,
+	OccupationalHealthcareEntrySchema,
+	HealthCheckEntrySchema,
+]);

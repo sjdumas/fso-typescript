@@ -2,7 +2,7 @@ import express from "express";
 import type { NextFunction, Request, Response } from "express";
 import { z } from "zod";
 import patientService from "../services/patientService";
-import { toNewPatient } from "../utils";
+import { toNewPatient, toNewEntry } from "../utils";
 
 const router = express.Router();
 
@@ -18,14 +18,36 @@ router.get("/:id", (req, res) => {
 	} else {
 		res.sendStatus(404);
 	}
-})
+});
 
 router.post("/", (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const newPatient = toNewPatient(req.body);
 		const addedPatient = patientService.addPatient(newPatient);
-
 		res.json(addedPatient);
+	} catch (error: unknown) {
+		next(error);
+	}
+});
+
+router.post("/:id/entries", (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const newEntry = toNewEntry(req.body);
+		const id = req.params.id;
+
+		if (typeof id !== "string") {
+			res.status(400).send("Invalid patient id");
+			return;
+		}
+
+		const addedEntry = patientService.addEntry(id, newEntry);
+
+		if (!addedEntry) {
+			res.sendStatus(404);
+			return;
+		}
+
+		res.json(addedEntry);
 	} catch (error: unknown) {
 		next(error);
 	}

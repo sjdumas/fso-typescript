@@ -1,6 +1,6 @@
 import { z } from "zod";
-import type { NewPatient } from "./types";
-import { Gender } from "./types";
+import type { NewPatient, NewEntry } from "./types";
+import { Gender, NewEntrySchema } from "./types";
 
 export const newPatientSchema = z.object({
 	name: z.string(),
@@ -12,4 +12,8 @@ export const newPatientSchema = z.object({
 
 export const toNewPatient = (object: unknown): NewPatient => {
 	return newPatientSchema.parse(object);
+};
+
+export const toNewEntry = (object: unknown): NewEntry => {
+	return NewEntrySchema.parse(object);
 };
