@@ -4,9 +4,34 @@ import { Typography, Divider } from "@mui/material";
 import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
 import TransgenderIcon from "@mui/icons-material/Transgender";
+import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
+import WorkIcon from "@mui/icons-material/Work";
+import MonitorHeartIcon from "@mui/icons-material/MonitorHeart";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
-import { Patient, Gender, Entry, Diagnosis } from "../types";
+import { Patient, Gender, Entry, Diagnosis, HealthCheckRating } from "../types";
 import patientService from "../services/patients";
+
+const assertNever = (value: never): never => {
+	throw new Error(
+		`Unhandled discriminated union member: ${JSON.stringify(value)}`
+	);
+};
+
+const healthCheckColor = (rating: HealthCheckRating) => {
+	switch (rating) {
+		case HealthCheckRating.Healthy:
+			return "green";
+		case HealthCheckRating.LowRisk:
+			return "yellow";
+		case HealthCheckRating.HighRisk:
+			return "orange";
+		case HealthCheckRating.CriticalRisk:
+			return "red";
+		default:
+			return assertNever(rating);
+	}
+};
 
 interface EntryDetailsProps {
 	entry: Entry;
@@ -18,21 +43,59 @@ const EntryDetails = ({ entry, diagnoses }: EntryDetailsProps) => {
 		return diagnoses.find((d) => d.code === code);
 	};
 
-	return (
-		<div style={{ border: "1px solid black", borderRadius: "5px", padding: "0.5em", marginBottom: "0.5em" }}>
-			<Typography>{entry.date} {entry.description}</Typography>
-			<ul>
-				{entry.diagnosisCodes?.map((code) => {
-					const diagnosis = findDiagnosis(code);
-					return (
-						<li key={code}>
-							{code} {diagnosis ? diagnosis.name : ""}
-						</li>
-					);
-				})}
-			</ul>
-		</div>
+	const diagnosisList = (
+		<ul>
+			{entry.diagnosisCodes?.map((code) => {
+				const diagnosis = findDiagnosis(code);
+				return (
+					<li key={code}>
+						{code} {diagnosis ? diagnosis.name : ""}
+					</li>
+				);
+			})}
+		</ul>
 	);
+
+	switch (entry.type) {
+		case "Hospital":
+			return (
+				<div style={{ border: "1px solid black", borderRadius: "5px", padding: "0.5em", marginBottom: "0.5em" }}>
+					<Typography>{entry.date} <LocalHospitalIcon /></Typography>
+					<Typography style={{ fontStyle: "italic" }}>{entry.description}</Typography>
+					{diagnosisList}
+					<Typography>
+						discharge: {entry.discharge.date} - {entry.discharge.criteria}
+					</Typography>
+					<Typography>specialist: {entry.specialist}</Typography>
+				</div>
+			);
+		case "OccupationalHealthcare":
+			return (
+				<div style={{ border: "1px solid black", borderRadius: "5px", padding: "0.5em", marginBottom: "0.5em" }}>
+					<Typography>{entry.date} <WorkIcon /> {entry.employerName}</Typography>
+					<Typography style={{ fontStyle: "italic" }}>{entry.description}</Typography>
+					{diagnosisList}
+					{entry.sickLeave && (
+						<Typography>
+							sick leave: {entry.sickLeave.startDate} - {entry.sickLeave.endDate}
+						</Typography>
+					)}
+					<Typography>specialist: {entry.specialist}</Typography>
+				</div>
+			);
+		case "HealthCheck":
+			return (
+				<div style={{ border: "1px solid black", borderRadius: "5px", padding: "0.5em", marginBottom: "0.5em" }}>
+					<Typography>{entry.date} <MonitorHeartIcon /></Typography>
+					<Typography style={{ fontStyle: "italic" }}>{entry.description}</Typography>
+					{diagnosisList}
+					<FavoriteIcon style={{ color: healthCheckColor(entry.healthCheckRating) }} />
+					<Typography>specialist: {entry.specialist}</Typography>
+				</div>
+			);
+		default:
+			return assertNever(entry);
+	}
 };
 
 interface PatientPageProps {
