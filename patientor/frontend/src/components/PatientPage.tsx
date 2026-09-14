@@ -10,6 +10,7 @@ import MonitorHeartIcon from "@mui/icons-material/MonitorHeart";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
 import { Patient, Gender, Entry, Diagnosis, HealthCheckRating } from "../types";
+import AddEntryForm from "./AddEntryForm";
 import patientService from "../services/patients";
 
 const assertNever = (value: never): never => {
@@ -133,6 +134,13 @@ const PatientPage = ({ diagnoses }: PatientPageProps) => {
 		}
 	};
 
+	const handleEntryAdded = (entry: Entry) => {
+		setPatient((prev) => {
+			if (!prev) return prev;
+			return { ...prev, entries: prev.entries.concat(entry) };
+		});
+	};
+
 	return (
 		<div>
 			<Typography variant="h4" sx={{ marginBottom: "0.5em" }}>
@@ -146,6 +154,7 @@ const PatientPage = ({ diagnoses }: PatientPageProps) => {
 			{patient.entries.map((entry) => (
 				<EntryDetails key={entry.id} entry={entry} diagnoses={diagnoses} />
 			))}
+			{id && <AddEntryForm patientId={id} onEntryAdded={handleEntryAdded} />}
 		</div>
 	);
 };
