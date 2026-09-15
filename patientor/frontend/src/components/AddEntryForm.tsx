@@ -1,33 +1,46 @@
 import { useState } from "react";
 import axios from "axios";
-import { TextField, Button, Typography, Paper, Stack, Alert, Select, MenuItem, InputLabel } from "@mui/material";
+import {
+	TextField,
+	Button,
+	Typography,
+	Paper,
+	Stack,
+	Alert,
+	Select,
+	MenuItem,
+	InputLabel,
+	OutlinedInput,
+	Checkbox,
+	ListItemText,
+} from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
 
-import { NewEntry, HealthCheckRating, Entry } from "../types";
+import { NewEntry, HealthCheckRating, Entry, Diagnosis } from "../types";
 import patientService from "../services/patients";
 
 interface Props {
 	patientId: string;
+	diagnoses: Diagnosis[];
 	onEntryAdded: (entry: Entry) => void;
 }
 
 type EntryType = "HealthCheck" | "Hospital" | "OccupationalHealthcare";
 
-const AddEntryForm = ({ patientId, onEntryAdded }: Props) => {
+const AddEntryForm = ({ patientId, diagnoses, onEntryAdded }: Props) => {
 	const [entryType, setEntryType] = useState<EntryType>("HealthCheck");
 	const [description, setDescription] = useState("");
 	const [date, setDate] = useState("");
 	const [specialist, setSpecialist] = useState("");
-	const [diagnosisCodes, setDiagnosisCodes] = useState("");
+	const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
 
-	// HealthCheck-specific
-	const [healthCheckRating, setHealthCheckRating] = useState("");
+	const [healthCheckRating, setHealthCheckRating] = useState<HealthCheckRating>(
+		HealthCheckRating.Healthy
+	);
 
-	// Hospital-specific
 	const [dischargeDate, setDischargeDate] = useState("");
 	const [dischargeCriteria, setDischargeCriteria] = useState("");
 
-	// OccupationalHealthcare-specific
 	const [employerName, setEmployerName] = useState("");
 	const [sickLeaveStart, setSickLeaveStart] = useState("");
 	const [sickLeaveEnd, setSickLeaveEnd] = useState("");
@@ -38,8 +51,8 @@ const AddEntryForm = ({ patientId, onEntryAdded }: Props) => {
 		setDescription("");
 		setDate("");
 		setSpecialist("");
-		setDiagnosisCodes("");
-		setHealthCheckRating("");
+		setDiagnosisCodes([]);
+		setHealthCheckRating(HealthCheckRating.Healthy);
 		setDischargeDate("");
 		setDischargeCriteria("");
 		setEmployerName("");
@@ -51,10 +64,21 @@ const AddEntryForm = ({ patientId, onEntryAdded }: Props) => {
 		setEntryType(event.target.value as EntryType);
 	};
 
+	const handleDiagnosisCodesChange = (
+		event: SelectChangeEvent<typeof diagnosisCodes>
+	) => {
+		const value = event.target.value;
+		setDiagnosisCodes(typeof value === "string" ? value.split(",") : value);
+	};
+
+	const handleHealthCheckRatingChange = (
+		event: SelectChangeEvent<HealthCheckRating>
+	) => {
+		setHealthCheckRating(Number(event.target.value) as HealthCheckRating);
+	};
+
 	const buildEntry = (): NewEntry => {
-		const codes = diagnosisCodes
-			? diagnosisCodes.split(",").map((code) => code.trim())
-			: undefined;
+		const codes = diagnosisCodes.length > 0 ? diagnosisCodes : undefined;
 
 		switch (entryType) {
 			case "HealthCheck":
@@ -64,7 +88,7 @@ const AddEntryForm = ({ patientId, onEntryAdded }: Props) => {
 					date,
 					specialist,
 					diagnosisCodes: codes,
-					healthCheckRating: Number(healthCheckRating) as HealthCheckRating,
+					healthCheckRating,
 				};
 			case "Hospital":
 				return {
@@ -163,22 +187,42 @@ const AddEntryForm = ({ patientId, onEntryAdded }: Props) => {
 						value={specialist}
 						onChange={({ target }) => setSpecialist(target.value)}
 					/>
-					<TextField
-						label="Diagnosis Codes"
-						fullWidth
-						placeholder="comma separated, e.g. Z57.1, M51.2"
-						value={diagnosisCodes}
-						onChange={({ target }) => setDiagnosisCodes(target.value)}
-					/>
+
+					<div>
+						<InputLabel>Diagnosis Codes</InputLabel>
+						<Select
+							multiple
+							fullWidth
+							value={diagnosisCodes}
+							onChange={handleDiagnosisCodesChange}
+							input={<OutlinedInput label="Diagnosis Codes" />}
+							renderValue={(selected) => selected.join(", ")}
+						>
+							{diagnoses.map((diagnosis) => (
+								<MenuItem key={diagnosis.code} value={diagnosis.code}>
+									<Checkbox checked={diagnosisCodes.includes(diagnosis.code)} />
+									<ListItemText primary={`${diagnosis.code} ${diagnosis.name}`} />
+								</MenuItem>
+							))}
+						</Select>
+					</div>
 
 					{entryType === "HealthCheck" && (
-						<TextField
-							label="Health Check Rating"
-							fullWidth
-							placeholder="0 = Healthy, 1 = Low Risk, 2 = High Risk, 3 = Critical Risk"
-							value={healthCheckRating}
-							onChange={({ target }) => setHealthCheckRating(target.value)}
-						/>
+						<div>
+							<InputLabel>Health Check Rating</InputLabel>
+							<Select
+								fullWidth
+								value={healthCheckRating}
+								onChange={handleHealthCheckRatingChange}
+							>
+								<MenuItem value={HealthCheckRating.Healthy}>Healthy</MenuItem>
+								<MenuItem value={HealthCheckRating.LowRisk}>Low Risk</MenuItem>
+								<MenuItem value={HealthCheckRating.HighRisk}>High Risk</MenuItem>
+								<MenuItem value={HealthCheckRating.CriticalRisk}>
+									Critical Risk
+								</MenuItem>
+							</Select>
+						</div>
 					)}
 
 					{entryType === "Hospital" && (

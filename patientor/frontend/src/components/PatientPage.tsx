@@ -154,7 +154,13 @@ const PatientPage = ({ diagnoses }: PatientPageProps) => {
 			{patient.entries.map((entry) => (
 				<EntryDetails key={entry.id} entry={entry} diagnoses={diagnoses} />
 			))}
-			{id && <AddEntryForm patientId={id} onEntryAdded={handleEntryAdded} />}
+			{id && (
+				<AddEntryForm
+					patientId={id}
+					diagnoses={diagnoses}
+					onEntryAdded={handleEntryAdded}
+				/>
+			)}
 		</div>
 	);
 };
