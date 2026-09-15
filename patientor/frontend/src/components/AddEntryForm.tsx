@@ -272,7 +272,7 @@ const AddEntryForm = ({ patientId, diagnoses, onEntryAdded }: Props) => {
 					)}
 
 					<Button type="submit" variant="contained" color="primary">
-						Add Entry
+						Add
 					</Button>
 				</Stack>
 			</form>

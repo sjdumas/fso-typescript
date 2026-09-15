@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Typography, Divider } from "@mui/material";
+import { Typography, Divider, Button } from "@mui/material";
 import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
 import TransgenderIcon from "@mui/icons-material/Transgender";
@@ -106,6 +106,7 @@ interface PatientPageProps {
 const PatientPage = ({ diagnoses }: PatientPageProps) => {
 	const { id } = useParams<{ id: string }>();
 	const [patient, setPatient] = useState<Patient | null>(null);
+	const [showEntryForm, setShowEntryForm] = useState(false);
 
 	useEffect(() => {
 		const fetchPatient = async () => {
@@ -155,11 +156,20 @@ const PatientPage = ({ diagnoses }: PatientPageProps) => {
 				<EntryDetails key={entry.id} entry={entry} diagnoses={diagnoses} />
 			))}
 			{id && (
-				<AddEntryForm
-					patientId={id}
-					diagnoses={diagnoses}
-					onEntryAdded={handleEntryAdded}
-				/>
+				showEntryForm ? (
+					<AddEntryForm
+						patientId={id}
+						diagnoses={diagnoses}
+						onEntryAdded={(entry) => {
+							handleEntryAdded(entry);
+							setShowEntryForm(false);
+						}}
+					/>
+				) : (
+					<Button variant="contained" onClick={() => setShowEntryForm(true)}>
+						Add New Entry
+					</Button>
+				)
 			)}
 		</div>
 	);
