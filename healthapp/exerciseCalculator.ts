@@ -1,56 +1,56 @@
 import { parseExerciseArguments } from "./utils.js";
 
 interface ExerciseResult {
-	periodLength: number;
-	trainingDays: number;
-	success: boolean;
-	rating: number;
-	ratingDescription: string;
-	target: number;
-	average: number;
+  periodLength: number;
+  trainingDays: number;
+  success: boolean;
+  rating: number;
+  ratingDescription: string;
+  target: number;
+  average: number;
 }
 
 export const calculateExercises = (hours: number[], target: number): ExerciseResult => {
-	const periodLength = hours.length;
-	const trainingDays = hours.filter((h) => h > 0).length;
-	const average = hours.reduce((sum, h) => sum + h, 0) / periodLength;
-	const success = average >= target;
+  const periodLength = hours.length;
+  const trainingDays = hours.filter((h) => h > 0).length;
+  const average = hours.reduce((sum, h) => sum + h, 0) / periodLength;
+  const success = average >= target;
 
-	let rating: number;
-	let ratingDescription: string;
+  let rating: number;
+  let ratingDescription: string;
 
-	if (average >= target) {
-		rating = 3;
-		ratingDescription = "great job, target reached";
-	} else if (average >= target * 0.75) {
-		rating = 2;
-		ratingDescription = "not too bad but could be better";
-	} else {
-		rating = 1;
-		ratingDescription = "bad";
-	}
+  if (average >= target) {
+    rating = 3;
+    ratingDescription = "great job, target reached";
+  } else if (average >= target * 0.75) {
+    rating = 2;
+    ratingDescription = "not too bad but could be better";
+  } else {
+    rating = 1;
+    ratingDescription = "bad";
+  }
 
-	return {
-		periodLength,
-		trainingDays,
-		success,
-		rating,
-		ratingDescription,
-		target,
-		average,
-	};
+  return {
+    periodLength,
+    trainingDays,
+    success,
+    rating,
+    ratingDescription,
+    target,
+    average,
+  };
 };
 
 if (process.argv[1] === import.meta.filename) {
-	try {
-		const { target, hours } = parseExerciseArguments(process.argv);
-		console.log(calculateExercises(hours, target));
-	} catch (error: unknown) {
-		let errorMessage = "Something bad happened.";
-		if (error instanceof Error) {
-			errorMessage += " Error: " + error.message;
-		}
-		console.log(errorMessage);
-	}
+  try {
+    const { target, hours } = parseExerciseArguments(process.argv);
+    console.log(calculateExercises(hours, target));
+  } catch (error: unknown) {
+    let errorMessage = "Something bad happened.";
+    if (error instanceof Error) {
+      errorMessage += " Error: " + error.message;
+    }
+    console.log(errorMessage);
+  }
 }
 

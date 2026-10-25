@@ -38,9 +38,9 @@ const createEntry = async (patientId: string, entry: NewEntry) => {
 };
 
 export default {
-  getAll, 
-  getById, 
-  create, 
+  getAll,
+  getById,
+  create,
   createEntry
 };
 

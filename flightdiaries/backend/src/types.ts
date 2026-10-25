@@ -26,7 +26,7 @@ export const NewEntrySchema = z.object({
   comment: z.string().optional()
 });
 
-export type NewDiaryEntry = z.infer<typeof NewEntrySchema>; 
+export type NewDiaryEntry = z.infer<typeof NewEntrySchema>;
 
 export interface DiaryEntry extends NewDiaryEntry {
   id: number;

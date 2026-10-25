@@ -1,33 +1,33 @@
 export interface CoursePartBase {
-	name: string;
-	exerciseCount: number;
+  name: string;
+  exerciseCount: number;
 }
 
 export interface CoursePartDescription extends CoursePartBase {
-	description: string;
+  description: string;
 }
 
 export interface CoursePartBasic extends CoursePartDescription {
-	kind: "basic";
+  kind: "basic";
 }
 
 export interface CoursePartGroup extends CoursePartBase {
-	groupProjectCount: number;
-	kind: "group";
+  groupProjectCount: number;
+  kind: "group";
 }
 
 export interface CoursePartBackground extends CoursePartDescription {
-	backgroundMaterial: string;
-	kind: "background";
+  backgroundMaterial: string;
+  kind: "background";
 }
 
 export interface CoursePartSpecial extends CoursePartDescription {
-	requirements: string[];
-	kind: "special";
+  requirements: string[];
+  kind: "special";
 }
 
 export type CoursePart =
-	| CoursePartBasic
-	| CoursePartGroup
-	| CoursePartBackground
-	| CoursePartSpecial;
+  | CoursePartBasic
+  | CoursePartGroup
+  | CoursePartBackground
+  | CoursePartSpecial;

@@ -4,10 +4,10 @@ test.describe('Health App API', () => {
   test.describe('GET /hello', () => {
     test('should return greeting message', async ({ request }) => {
       const response = await request.get('/hello');
-      
+
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
-      
+
       const text = await response.text();
       expect(text).toBe('Hello Full Stack!');
     });
@@ -16,10 +16,10 @@ test.describe('Health App API', () => {
   test.describe('GET /bmi', () => {
     test('should calculate BMI correctly', async ({ request }) => {
       const response = await request.get('/bmi?height=180&weight=72');
-      
+
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
-      
+
       const body = await response.json();
       expect(body).toHaveProperty('weight', 72);
       expect(body).toHaveProperty('height', 180);
@@ -29,36 +29,36 @@ test.describe('Health App API', () => {
 
     test('should return error for missing height parameter', async ({ request }) => {
       const response = await request.get('/bmi?weight=72');
-      
+
       expect(response.status()).toBe(400);
-      
+
       const body = await response.json();
       expect(body).toHaveProperty('error', 'malformatted parameters');
     });
 
     test('should return error for missing weight parameter', async ({ request }) => {
       const response = await request.get('/bmi?height=180');
-      
+
       expect(response.status()).toBe(400);
-      
+
       const body = await response.json();
       expect(body).toHaveProperty('error', 'malformatted parameters');
     });
 
     test('should return error for non-numeric height', async ({ request }) => {
       const response = await request.get('/bmi?height=abc&weight=72');
-      
+
       expect(response.status()).toBe(400);
-      
+
       const body = await response.json();
       expect(body).toHaveProperty('error', 'malformatted parameters');
     });
 
     test('should return error for non-numeric weight', async ({ request }) => {
       const response = await request.get('/bmi?height=180&weight=xyz');
-      
+
       expect(response.status()).toBe(400);
-      
+
       const body = await response.json();
       expect(body).toHaveProperty('error', 'malformatted parameters');
     });
@@ -72,10 +72,10 @@ test.describe('Health App API', () => {
           target: 2
         }
       });
-      
+
       expect(response.ok()).toBeTruthy();
       expect(response.status()).toBe(200);
-      
+
       const body = await response.json();
       expect(body).toHaveProperty('periodLength');
       expect(body).toHaveProperty('trainingDays');
@@ -92,7 +92,7 @@ test.describe('Health App API', () => {
           target: 2
         }
       });
-      
+
       const body = await response.json();
       expect(body).toHaveProperty('error', 'parameters missing');
     });
@@ -103,7 +103,7 @@ test.describe('Health App API', () => {
           daily_exercises: [1, 0, 2, 0, 3, 0, 2.5]
         }
       });
-      
+
       const body = await response.json();
       expect(body).toHaveProperty('error', 'parameters missing');
     });
@@ -115,7 +115,7 @@ test.describe('Health App API', () => {
           target: 'abc'
         }
       });
-      
+
       const body = await response.json();
       expect(body).toHaveProperty('error', 'malformatted parameters');
     });
@@ -127,7 +127,7 @@ test.describe('Health App API', () => {
           target: 2
         }
       });
-      
+
       const body = await response.json();
       expect(body).toHaveProperty('error', 'malformatted parameters');
     });
