@@ -60,8 +60,9 @@ The test suite covers the following endpoints:
 ## GitHub Actions
 
 The repository includes a GitHub Actions workflow that:
-1. Builds and starts the healthapp server
+
+1. Lints and starts the healthapp server
 2. Runs the E2E tests
 3. Uploads test reports as artifacts
 
-The workflow runs on pushes and pull requests to main/master branches.
+The workflow runs on pushes to main/master branches.
